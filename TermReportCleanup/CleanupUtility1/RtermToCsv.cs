@@ -11,33 +11,83 @@ namespace CleanupUtility1;
 
 public static class FilePayload
 {
+    public static string NL = Environment.NewLine; // shortcut
+    public static string NORMAL = Console.IsOutputRedirected ? "" : "\x1b[39m";
+    public static string RED = Console.IsOutputRedirected ? "" : "\x1b[91m";
+    public static string GREEN = Console.IsOutputRedirected ? "" : "\x1b[92m";
+    public static string YELLOW = Console.IsOutputRedirected ? "" : "\x1b[93m";
+    public static string BLUE = Console.IsOutputRedirected ? "" : "\x1b[94m";
 
-    class Selections
+    public class UserSelect
     {
         public string PayloadDir { get; set; } = default!;
         public string OutputDir { get; set; } = default!;
     }
 
-    public static void OpenFile()
-    {
-        // Using the GetFiles() method
-        string[] filedata = Directory.GetFiles(@"C:\Users\Ed\Documents\PowerBI\Reports");
 
+    public static void r_Term_Version_Convert()
+    {
+        UserSelect Selections = new UserSelect();
+
+        Console.WriteLine($"{BLUE}---r_Term_Version_Convert----{NORMAL}");
+        Console.WriteLine($"{YELLOW}---WARNING - This tool will attempt to format and overwrite all .txt files in the directory provided----{NORMAL}");
+        Console.WriteLine("-Enter Source Directory");
+        // Console.WriteLine("Spectrum    : line:{0} index:{1}", Timread.line, Timread.index);
+        // Console.WriteLine("GWS         : Ch {0} : Model {1}", Machine.gwsChannel, Machine.Model);
+        // Console.WriteLine("---------------------------");
+        // Console.WriteLine("Write to {0}?  y or n", d.Name);
+        Selections.PayloadDir = Console.ReadLine();
+        Selections.OutputDir = Selections.PayloadDir;
+        // Using the GetFiles() method
+        string[] filedata = Directory.GetFiles(Selections.PayloadDir);
+        Console.WriteLine("input: " + Selections.PayloadDir);
         // Displaying the file name one by one
         foreach (string i in filedata)
         {
-
-            Console.WriteLine(i);
+            RemoveBlanks(i, Selections.OutputDir);
+            RemoveHeaders(i, 4);
+            CleanFormatting(i);
+            Console.WriteLine("Processed File: " + i);
+            // Console.WriteLine(i);
         }
+        Combinefiles(Selections.PayloadDir);
+        Console.WriteLine("Files Combined");
+        Console.WriteLine($"{GREEN}---r_Term_Version PreProcessing Complete----{NORMAL}");
         // System.Diagnostics.Process.Start("explorer.exe", @"C:\Users\Ed\Documents\PowerBI\Reports ");
     }
 
-    public static void RemoveBlanks()
+    public static void Combinefiles(string DirLoc)
     {
         var tempFileName = Path.GetTempFileName();
         try
         {
-            using (var streamReader = new StreamReader(@"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions.txt"))
+            using (var output = new StreamWriter(tempFileName))
+            {
+                foreach (var file in Directory.GetFiles(DirLoc, "*.*"))
+                {
+                    using (var input = new StreamReader(file))
+                    {
+                        output.WriteLine(input.ReadToEnd());
+                    }
+                }
+            }
+            File.Copy(tempFileName, DirLoc + "/combined.txt", true);
+        }
+        finally
+        {
+            File.Delete(tempFileName);
+        }
+    }
+
+
+
+
+    public static void RemoveBlanks(string fileLoc, string DirLoc)
+    {
+        var tempFileName = Path.GetTempFileName();
+        try
+        {
+            using (var streamReader = new StreamReader(fileLoc))
             using (var streamWriter = new StreamWriter(tempFileName))
             {
                 string line;
@@ -49,21 +99,21 @@ public static class FilePayload
                     }
                 }
             }
-            File.Copy(tempFileName, @"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions1.txt", true);
+            File.Copy(tempFileName, fileLoc, true);
         }
         finally
         {
             File.Delete(tempFileName);
         }
     }
-    public static void RemoveHeaders()
+    // Remove header information denoted by [FF] and row count
+    public static void RemoveHeaders(string fileLoc, int NumHeaderRows)
     {
         int row = 0;
-        int HeaderSize = 4;
         var tempFileName = Path.GetTempFileName();
         try
         {
-            using (var streamReader = new StreamReader(@"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions1.txt"))
+            using (var streamReader = new StreamReader(fileLoc))
             using (var streamWriter = new StreamWriter(tempFileName))
             {
                 // string headerLine = "CMTY,Division,WIND";
@@ -72,7 +122,7 @@ public static class FilePayload
                 {
                     row++;
                     // Remove Top
-                    if (row == 1 || row == 2 || row == 3 || row == 4)
+                    if (row <= NumHeaderRows)
                     {
                         continue;
                     }
@@ -94,21 +144,21 @@ public static class FilePayload
                     }
                 }
             }
-            File.Copy(tempFileName, @"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions1.txt", true);
+            File.Copy(tempFileName, fileLoc, true);
         }
         finally
         {
             File.Delete(tempFileName);
         }
     }
-
-    public static void CleanFormatting()
+    // Cleanup remaining spaces and Format with Pipes
+    public static void CleanFormatting(string fileLoc)
     {
         int row = 0;
         var tempFileName = Path.GetTempFileName();
         try
         {
-            using (var streamReader = new StreamReader(@"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions1.txt"))
+            using (var streamReader = new StreamReader(fileLoc))
             using (var streamWriter = new StreamWriter(tempFileName))
             {
                 // string headerLine = "CMTY,Division,WIND";
@@ -119,19 +169,17 @@ public static class FilePayload
                     //Reduce Spaces
 
                     string newline = string.Join(" ", line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                    string spaceline = newline.Replace("| ","|").Replace(" |","|").Replace(" ","|");
+                    string spaceline = newline.Replace("| ", "|").Replace(" |", "|").Replace(" ", "|");
 
                     streamWriter.WriteLine(spaceline);
                 }
             }
-            File.Copy(tempFileName, @"C:\Users\Ed\Documents\PowerBI\Reports\GGFT_term_versions2.txt", true);
+            File.Copy(tempFileName, fileLoc, true);
         }
         finally
         {
             File.Delete(tempFileName);
         }
     }
-
-
 
 }

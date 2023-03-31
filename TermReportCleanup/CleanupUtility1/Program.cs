@@ -15,46 +15,24 @@ async void Menu()
 
     // Console.Clear();
     Console.WriteLine(" ");
-    Console.WriteLine("-----File Cleaner - (TermVersions to .CSV) ----\r");
-    Console.WriteLine("\to - open file");
-    Console.WriteLine("\tc - clean");
-    Console.WriteLine("\t1 - remove blanks");
-    Console.WriteLine("\t2 - remove Headers");
-    Console.WriteLine("\t3 - remove Headers");
+    Console.WriteLine("-----File Preprocessor----\r");
+    Console.WriteLine("\tc - Pre-Process r_term_version");
     // Console.WriteLine("\th - Help");
     Console.Write("Your option? ");
 
     // Use a switch statement to do the math.
     switch (Console.ReadLine())
     {
-        case "o":
-            Console.WriteLine("\to - open file");
-            FilePayload.OpenFile();
-            break;
-
         case "c":
-            Console.WriteLine("Processing file ");
-            Console.WriteLine("removing blank lines ");
-            Console.WriteLine("removing page breaks ");
-            Console.WriteLine("removing page headers ");
-            Console.WriteLine("creating columns ");
-            Console.WriteLine("exporting CSV ");
+            FilePayload.r_Term_Version_Convert();
+
+            // Console.WriteLine("exporting CSV ");
             break;
 
         case "1":
-            Console.WriteLine("\t1 - removing blank lines");
-            FilePayload.RemoveBlanks();
+            FilePayload.Combinefiles(@"C:\Users\Ed\Documents\PowerBI\Reports");
             break;
 
-        case "2":
-            Console.WriteLine("\t1 - removing Header lines");
-            FilePayload.RemoveHeaders();
-            break;
-
-                    case "3":
-            Console.WriteLine("\tCleanup");
-            FilePayload.CleanFormatting();
-            break;
     }
 }
 
