@@ -1,0 +1,15 @@
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\bin\Debug\net7.0\CleanupUtility1.exe
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\bin\Debug\net7.0\CleanupUtility1.deps.json
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\bin\Debug\net7.0\CleanupUtility1.runtimeconfig.json
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\bin\Debug\net7.0\CleanupUtility1.dll
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\bin\Debug\net7.0\CleanupUtility1.pdb
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.csproj.AssemblyReference.cache
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.AssemblyInfoInputs.cache
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.AssemblyInfo.cs
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.csproj.CoreCompileInputs.cache
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.dll
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\refint\CleanupUtility1.dll
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.pdb
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\CleanupUtility1.genruntimeconfig.cache
+C:\Users\Ed\Documents\GitHub\Reporting\TermReportCleanup\CleanupUtility1\obj\Debug\net7.0\ref\CleanupUtility1.dll
