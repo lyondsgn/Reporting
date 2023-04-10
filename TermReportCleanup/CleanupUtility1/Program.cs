@@ -30,7 +30,7 @@ async void Menu()
             break;
 
         case "1":
-            FilePayload.Combinefiles(@"C:\Users\Ed\Documents\PowerBI\Reports");
+        
             break;
 
     }

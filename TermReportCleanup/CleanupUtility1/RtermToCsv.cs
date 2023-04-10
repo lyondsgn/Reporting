@@ -11,6 +11,7 @@ namespace CleanupUtility1;
 
 public static class FilePayload
 {
+    public static int[] DelimiterSpacing = { 10, 21, 27, 38,48 };
     public static string NL = Environment.NewLine; // shortcut
     public static string NORMAL = Console.IsOutputRedirected ? "" : "\x1b[39m";
     public static string RED = Console.IsOutputRedirected ? "" : "\x1b[91m";
@@ -50,19 +51,20 @@ public static class FilePayload
             Console.WriteLine("Processed File: " + i);
             // Console.WriteLine(i);
         }
-        Combinefiles(Selections.PayloadDir);
+        Combinefiles(Selections.PayloadDir, "CMTY|DIV|WIN|DATE|TIME|Version|A|Reader|B|C|Card|D|OS|E|F|G");
         Console.WriteLine("Files Combined");
         Console.WriteLine($"{GREEN}---r_Term_Version PreProcessing Complete----{NORMAL}");
         // System.Diagnostics.Process.Start("explorer.exe", @"C:\Users\Ed\Documents\PowerBI\Reports ");
     }
 
-    public static void Combinefiles(string DirLoc)
+    public static void Combinefiles(string DirLoc, string header)
     {
         var tempFileName = Path.GetTempFileName();
         try
         {
             using (var output = new StreamWriter(tempFileName))
             {
+                output.WriteLine(header);
                 foreach (var file in Directory.GetFiles(DirLoc, "*.*"))
                 {
                     using (var input = new StreamReader(file))
@@ -133,6 +135,11 @@ public static class FilePayload
                         row = 0;
                         continue;
                     }
+                    if (line.Contains("NO TERM VERSIONS") || line.Contains("error"))
+                    {
+                        continue;
+                    }
+
                     // If letter 8 is blank. remove line 
                     if (Char.IsLetter(line[8]))
                     {
@@ -151,6 +158,8 @@ public static class FilePayload
             File.Delete(tempFileName);
         }
     }
+
+
     // Cleanup remaining spaces and Format with Pipes
     public static void CleanFormatting(string fileLoc)
     {
@@ -166,12 +175,15 @@ public static class FilePayload
                 while ((line = streamReader.ReadLine()) != null)
                 {
                     row++;
+                    for (int j = 0; j < DelimiterSpacing.Length; j++)
+                    {
+                        line = line.Insert(DelimiterSpacing[j], "|");
+                    }
+
                     //Reduce Spaces
-
-                    string newline = string.Join(" ", line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                    string spaceline = newline.Replace("| ", "|").Replace(" |", "|").Replace(" ", "|");
-
-                    streamWriter.WriteLine(spaceline);
+                    // string newline = string.Join(" ", line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    // string spaceline = newline.Replace("| ", "|").Replace(" |", "|");//.Replace(" ", "|");
+                    streamWriter.WriteLine(line);
                 }
             }
             File.Copy(tempFileName, fileLoc, true);
