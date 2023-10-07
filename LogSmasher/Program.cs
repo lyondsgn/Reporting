@@ -86,8 +86,12 @@ namespace LogFileProcessor
             string[] words = remainingText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string firstTwoWords = string.Join(" ", words.Take(2));
 
-            // Create the reformatted line with Unique ID
-            return $"{timestamp} | {messageType} | {firstTwoWords} | {elapsedTime} | {uniqueId}";
+            // Create the reformatted line with Unique ID and | between date and time
+            string[] dateTimeParts = timestamp.Split(' ');
+            string reformattedTimestamp = $"{dateTimeParts[0]} | {dateTimeParts[1]}";
+
+            return $"{reformattedTimestamp} | {messageType} | {firstTwoWords} | {elapsedTime} | {uniqueId}";
         }
+
     }
 }
