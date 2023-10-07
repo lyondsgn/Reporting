@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace LogFileProcessor
@@ -8,38 +9,49 @@ namespace LogFileProcessor
     {
         static void Main(string[] args)
         {
-            Console.Write("Enter the path of the log file: ");
-            string inputFilePath = Console.ReadLine();
+            Console.Write("Enter the directory containing log files: ");
+            string directoryPath = Console.ReadLine();
 
-            if (!File.Exists(inputFilePath))
+            if (!Directory.Exists(directoryPath))
             {
-                Console.WriteLine("File not found.");
+                Console.WriteLine("Directory not found.");
                 return;
             }
-
-            Console.Write("Enter the name for the new file: ");
-            string outputFileName = Console.ReadLine();
-            string outputFilePath = Path.Combine(Environment.CurrentDirectory, outputFileName);
-
 
             Console.Write("Enter a Unique ID: ");
             string uniqueId = Console.ReadLine();
 
-            using (StreamReader reader = new StreamReader(inputFilePath))
-            using (StreamWriter writer = new StreamWriter(outputFilePath))
+            string[] inputFiles = Directory.GetFiles(directoryPath, "*.log");
+
+            if (inputFiles.Length == 0)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                Console.WriteLine("No log files found in the directory.");
+                return;
+            }
+
+            string outputFileName = Path.GetFileName(directoryPath) + ".reformatted.log";
+            string outputFilePath = Path.Combine(directoryPath, outputFileName);
+
+            using (StreamWriter combinedWriter = new StreamWriter(outputFilePath))
+            {
+                foreach (string inputFile in inputFiles)
                 {
-                    if (IsValidLogEntry(line))
+                    using (StreamReader reader = new StreamReader(inputFile))
                     {
-                        line = ReformatLogEntry(line, uniqueId);
-                        writer.WriteLine(line);
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (IsValidLogEntry(line))
+                            {
+                                line = ReformatLogEntry(line, uniqueId);
+                                combinedWriter.WriteLine(line);
+                            }
+                        }
                     }
                 }
             }
 
-            Console.WriteLine($"Reformatted log file saved as {outputFileName}");
+            Console.WriteLine($"Reformatted log files combined and saved as {outputFileName}");
         }
 
         static bool IsValidLogEntry(string line)
