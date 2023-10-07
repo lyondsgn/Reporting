@@ -2,56 +2,80 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-class Program
+namespace LogFileProcessor
 {
-    static void Main(string[] args)
+    class Program
     {
-        Console.WriteLine("Log Summarizer");
-
-        Console.Write("Enter the input file path: ");
-        string inputFilePath = Console.ReadLine();
-
-        Console.Write("Enter the output file name (without extension): ");
-        string outputFileName = Console.ReadLine();
-
-        // Get the directory of the input file
-        string inputDirectory = Path.GetDirectoryName(inputFilePath);
-
-        // Combine the input directory and the output filename to create the full output path
-        string outputFilePath = Path.Combine(inputDirectory, outputFileName + ".txt");
-
-        using (StreamReader reader = new StreamReader(inputFilePath))
-        using (StreamWriter writer = new StreamWriter(outputFilePath, true)) // Pass 'true' to append to the file
+        static void Main(string[] args)
         {
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            Console.Write("Enter the path of the log file: ");
+            string inputFilePath = Console.ReadLine();
+
+            if (!File.Exists(inputFilePath))
             {
-                if (IsTimestampedLine(line))
+                Console.WriteLine("File not found.");
+                return;
+            }
+
+            Console.Write("Enter the name for the new file: ");
+            string outputFileName = Console.ReadLine();
+            string outputFilePath = Path.Combine(Environment.CurrentDirectory, outputFileName);
+
+
+            Console.Write("Enter a Unique ID: ");
+            string uniqueId = Console.ReadLine();
+
+            using (StreamReader reader = new StreamReader(inputFilePath))
+            using (StreamWriter writer = new StreamWriter(outputFilePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    string summarizedLine = SummarizeLogLine(line);
-                    writer.WriteLine(summarizedLine);
+                    if (IsValidLogEntry(line))
+                    {
+                        line = ReformatLogEntry(line, uniqueId);
+                        writer.WriteLine(line);
+                    }
                 }
             }
+
+            Console.WriteLine($"Reformatted log file saved as {outputFileName}");
         }
 
-        Console.WriteLine("Log summarization completed. Output written to: " + outputFilePath);
-    }
+        static bool IsValidLogEntry(string line)
+        {
+            // Use regular expression to check if the line starts with a timestamp and message type
+            // Example format: "2023-09-29 14:51:41.681 -05:00 [DBG]"
+            string pattern = @"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [-+]\d{2}:\d{2} \[[A-Z]+\]";
 
-    static bool IsTimestampedLine(string line)
-    {
-        // Use a regex pattern to match lines with timestamps
-        string pattern = @"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [-+]\d{2}:\d{2} \[[A-Z]+\] ";
-        return Regex.IsMatch(line, pattern);
-    }
+            // Check if the line contains an elapsed time in one of the specified formats
+            string elapsedTimePattern = @"\b\d{2}:\d{2}:\d{2}\.\d{7}\b";
+            pattern += ".*" + elapsedTimePattern;
 
-    static string SummarizeLogLine(string line)
-    {
-        // Split the line into parts based on spaces
-        string[] parts = line.Split(' ');
+            return Regex.IsMatch(line, pattern);
+        }
 
-        // Create a summarized line with the desired format
-        string summarizedLine = $"{parts[0]} | {parts[1]} | {parts[2]} | {parts[3]} | {parts[4]} | {parts[5]} | {string.Join(" ", parts, 6, parts.Length - 6)}";
+        static string ReformatLogEntry(string line, string uniqueId)
+        {
+            // Extract the message type and elapsed time from the line
+            string messageTypePattern = @"\[[A-Z]+\]";
+            string elapsedTimePattern = @"\b\d{2}:\d{2}:\d{2}\.\d{7}\b";
 
-        return summarizedLine;
+            string messageType = Regex.Match(line, messageTypePattern).Value;
+            string elapsedTime = Regex.Match(line, elapsedTimePattern).Value;
+
+            // Extract the timestamp and message type from the line
+            string timestamp = line.Substring(0, line.IndexOf(messageType));
+
+            // Extract the remaining text after the message type
+            string remainingText = line.Substring(line.IndexOf(messageType) + messageType.Length).TrimStart();
+
+            // Split the remaining text into words and keep only the first two
+            string[] words = remainingText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string firstTwoWords = string.Join(" ", words.Take(2));
+
+            // Create the reformatted line with Unique ID
+            return $"{timestamp} | {messageType} | {firstTwoWords} | {elapsedTime} | {uniqueId}";
+        }
     }
 }
