@@ -1,4 +1,6 @@
-﻿using System;
+﻿// 20231110|ELS|initial build of log smasher... clean uip reports to analyze
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -34,6 +36,9 @@ namespace LogFileProcessor
 
             using (StreamWriter combinedWriter = new StreamWriter(outputFilePath))
             {
+                // Add a header line to the output file
+                combinedWriter.WriteLine("Date | Time | Message Type | First Two Words | Elapsed Time | Unique ID");
+
                 foreach (string inputFile in inputFiles)
                 {
                     using (StreamReader reader = new StreamReader(inputFile))
@@ -92,6 +97,5 @@ namespace LogFileProcessor
 
             return $"{reformattedTimestamp} | {messageType} | {firstTwoWords} | {elapsedTime} | {uniqueId}";
         }
-
     }
 }
